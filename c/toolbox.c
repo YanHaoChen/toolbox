@@ -39,3 +39,16 @@ int yes_or_no(void){
 			return 0;
 	}
 }
+
+int set_nonblock_flag(int desc, int value){
+	int get_flags = fcntl(desc, F_FETFL, 0);
+	if(get_flags == -1)
+		return -1;
+
+	if(value != 0)
+		get_flags |= O_NONBLOCK;
+	else
+		get_flags &= O_NONBLOCK;
+
+	return fcntl(desc, F_SETFL, get_flags);	
+}
