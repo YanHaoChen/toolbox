@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
-void swap(char *got_array, int a, int b){
+#include <fcntl.h>
+void swap(char got_array[], int a, int b){
 	if(got_array[a] != got_array[b]){
 		got_array[a] = got_array[a] ^ got_array[b];
 		got_array[b] = got_array[a] ^ got_array[b];
@@ -10,7 +10,7 @@ void swap(char *got_array, int a, int b){
 	}
 }
 
-void char_qsort(char *got_array, int left,int right){
+void char_qsort(char got_array[], int left,int right){
 	if(left < right){
 		int pivot = left;
 		for(int i = left+1;i <= right; i++){
@@ -41,7 +41,7 @@ int yes_or_no(void){
 }
 
 int set_nonblock_flag(int desc, int value){
-	int get_flags = fcntl(desc, F_FETFL, 0);
+	int get_flags = fcntl(desc, F_GETFL, 0);
 	if(get_flags == -1)
 		return -1;
 
