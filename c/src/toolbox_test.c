@@ -8,6 +8,8 @@ int test_count = 0;
 
 int test_swap();
 int test_char_qsort();
+int test_get_hash();
+int test_get_hash_with_zero_char();
 
 int main(){
 	int pass_count = 0;	
@@ -16,6 +18,10 @@ int main(){
 	pass_count += test_swap();	
 	printf("----------------\n");
 	pass_count += test_char_qsort();	
+	printf("----------------\n");
+	pass_count += test_get_hash();
+	printf("----------------\n");
+	pass_count += test_get_hash_with_zero_char();
 	printf("----------------\n");
 	printf("pass: %d\n", pass_count);
 	printf("pass rate: %.2f", ((float)pass_count / (float)test_count) * 100);
@@ -46,6 +52,37 @@ int test_char_qsort(){
 		return 1;
 	} else {
 		printf("char_qsort: failed\n");
+		return 0;
+	}
+}
+
+int test_get_hash(){
+	test_count++;
+	int test_hash = 0;
+	int result_hash = 0;
+	
+	test_hash = get_hash("0123");
+	result_hash = (48 + 49 + 50 + 51) % HASH_SIZE;
+	if(test_hash == result_hash){
+		printf("get_hash: pass\n");
+		return 1;
+	}else{
+		printf("get_hash: failed\n");
+		return 0;
+	}
+}
+
+int test_get_hash_with_zero_char(){
+	test_count++;
+	int test_hash = 0;
+	int result_hash = -1;
+	
+	test_hash = get_hash("");
+	if(test_hash == result_hash){
+		printf("get_hash_with_zero_char: pass\n");
+		return 1;
+	}else{
+		printf("get_hash_witch_zero_char: failed\n");
 		return 0;
 	}
 }

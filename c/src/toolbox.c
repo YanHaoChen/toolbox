@@ -32,7 +32,9 @@ struct key_char_head *init_key_char(){
 
 int get_hash(char *key){
 	int count = 0;
-	
+	if(strlen(key) < 1)
+		return -1;
+
 	for(;*key != '\0'; ++key){
 		count += *key;
 	}

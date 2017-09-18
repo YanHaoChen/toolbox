@@ -20,6 +20,7 @@ void char_qsort(char got_array[], int left, int right);
 int yes_or_no(void);
 int set_nonblock_flag(int desc, int value);
 
+// dict
 struct key_char_head *init_key_char(void);
 int get_hash(char *key);
 struct key_char_node *get_key_char_node(struct key_char_head *this_head, char *key);
