@@ -22,7 +22,19 @@ int set_nonblock_flag(int desc, int value);
 
 // dict
 struct key_char_head *init_key_char(void);
+
+// get_hash
+// return -1: length of string < 1
 int get_hash(char *key);
 struct key_char_node *get_key_char_node(struct key_char_head *this_head, char *key);
 char *get_key_char_value(struct key_char_head *this_head, char *key);
+
+// append_key_char
+// return 1: This key_char is frist node in this hash_number.
+// return 2: This key_char was appended behind someone key_char_node.
+// retunn 3: This key's value was Override by the new value.
 int append_key_char(struct key_char_head *this_head, char *key, char *value);
+// delete_key_char
+// return 0: This key was not found in this dictionary.
+// return 1: This key was deleted.
+int delete_key_char(struct key_char_head *this_head, char *key);

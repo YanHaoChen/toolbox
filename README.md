@@ -14,9 +14,13 @@ I made some tools useful to reduce the time of programing.
 	* int get\_hash(char \*key)
 	* struct key\_char\_node \*get\_key\_char\_node(struct key\_char\_head \*this\_head, char \*key)
 	* char \*get\_key\_char\_value(struct key\_char\_head \*this\_head, char \*key)
+	* int delete\_key\_char(struct key\_char\_head \*this\_head, char \*key)
 * Tools: `pcinfo`、`sysinfo`
 
-#### Test
+#### Testing
+
+[toolbox_testing.c](https://github.com/YanHaoChen/toolbox/blob/master/c/src/toolbox_testing.c)
+
 ```shell
 Start test.
 ----------------
@@ -30,4 +34,21 @@ get_hash_with_zero_char: pass
 ----------------
 pass: 4
 pass rate: 100.00%
+```
+
+Dictionary testing：[dictionary_testing.c](https://github.com/YanHaoChen/toolbox/blob/master/c/src/dictionary_testing.c)
+
+```shell
+Append: key:abc value:def
+state:1
+Find the value with this key: adc.
+result:def
+Append: key:bac value:aaa
+state:2
+Find the value with this key: bac.
+result:aaa
+Delete the value with this key: abc.
+state:1
+Find the value with this key: bac.
+result:aaa
 ```

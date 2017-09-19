@@ -46,11 +46,9 @@ struct key_char_node *get_key_char_node(struct key_char_head *this_head, char *k
 	hash_num = get_hash(key);
 	struct key_char_node *this_node;
 	this_node = &(this_head->hash_list[hash_num]);
-	
 	if(this_node->key == NULL){
 		return this_node;
 	}
-	
 	while(strcmp(this_node->key,key) != 0){
 		if(this_node->next != NULL){
 			this_node = this_node->next;
@@ -93,6 +91,29 @@ int append_key_char(struct key_char_head *this_head, char *key, char *value){
 	}else{
 		this_node->value = value;
 		return 3;
+	}
+}
+
+int delete_key_char(struct key_char_head *this_head, char *key){
+	struct key_char_node *this_node;
+	this_node = get_key_char_node(this_head, key);
+	if(this_node->key == NULL){
+		return 0;
+	}
+	if(strcmp(this_node->key, key) == 0){
+		if(this_node->next == NULL){
+			this_node = NULL;
+			return 1;
+		}
+		struct key_char_node *tmp_node;
+		tmp_node = this_node->next;
+		this_node->next = tmp_node->next;
+		this_node->key = tmp_node->key;
+		this_node->value = tmp_node->value;
+		free(tmp_node);
+		return 1;
+	}else{
+		return 0;
 	}
 }
 
