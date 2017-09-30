@@ -6,7 +6,7 @@ I made some tools useful to reduce the time of programing.
 
 ### C
 
-* A library: `toolbox.h`、`toolbox.c`
+* `toolbox.h`、`toolbox.c`
 	* void swap(char \*got\_array, int a, int b)
 	* void char\_qsort(char \*got_array, int left, int right)
 	* int yes\_or\_no(void)
@@ -15,6 +15,11 @@ I made some tools useful to reduce the time of programing.
 	* struct key\_char\_node \*get\_key\_char\_node(struct key\_char\_head \*this\_head, char \*key)
 	* char \*get\_key\_char\_value(struct key\_char\_head \*this\_head, char \*key)
 	* int delete\_key\_char(struct key\_char\_head \*this\_head, char \*key)
+* `packetg.h`、`packetg.c`
+	* unsigned short calculate\_csum(unsigned short \*packet, int header\_size);
+	* int init\_packet\_generator(char \*interface\_name);
+	* struct sockaddr\_ll set\_interface\_and\_push\_l2\_field(int sockfd, char \*packet, char \*interface_name , struct mac_addr \*addr);
+ 
 * Tools: `pcinfo`、`sysinfo`
 
 #### Testing
