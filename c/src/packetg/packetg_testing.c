@@ -30,11 +30,11 @@ int main(){
     
     generator = init_packet_generator();
     struct sockaddr_ll this_sockaddr;
-    this_sockaddr = set_interface_and_get_bind_addr(generator, "eth0", l2_addr);
-    push_l2_field(packet, l2_addr);
-    push_l3_field(packet, l3_addr, 17);
-    int header_size;
-    header_size = L2_LENGTH + L3_LENGTH;
+    this_sockaddr = set_interface_and_get_binding_addr(generator, "eth0", l2_addr);
+
+    int header_size = 0;
+    header_size += push_l2_field(packet, l2_addr);
+    header_size += push_l3_field(packet, l3_addr, 17);
     // packet[header_size++] = 't';
     // packet[header_size++] = 'e';
     // packet[header_size++] = 's';

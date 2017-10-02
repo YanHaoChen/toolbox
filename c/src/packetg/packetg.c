@@ -17,9 +17,9 @@ struct ip_addr{
     char *src_addr;
     char *dst_addr;
 };
-unsigned short calculate_csum(unsigned short *buf, int header_size)
+unsigned short cal_checksum(unsigned short *buf, int header_size)
         unsigned long sum;
-        // This unit is 2 bytes.  
+        // This unit includes 2 bytes.  
         header_size /= 2;
         for(sum=0; header_size>0; header_size--)
                 sum += *buf++;
@@ -38,7 +38,7 @@ int init_packet_generator(void){
     return sockfd;
 }
 
-struct sockaddr_ll set_interface_and_get_bind_addr(int sockfd, char *interface_name , struct mac_addr *addr){
+struct sockaddr_ll set_interface_and_get_binding_addr(int sockfd, char *interface_name , struct mac_addr *addr){
     struct ifreq if_id;
     struct sockaddr_ll bind_addr;   
     memset(&if_id, 0, sizeof(struct ifreq));
@@ -63,7 +63,7 @@ int push_l2_field(char *packet, struct mac_addr *addr){
         (l2_header->ether_shost)[i] = (addr->src_addr)[i];
         (l2_header->ether_dhost)[i] = (addr->dst_addr)[i];
     }
-    return 1;
+    return sizeof(struct ether_header);
 }
 
 int push_l3_field(char *packet, struct ip_addr *addr, int protocol){
@@ -80,6 +80,6 @@ int push_l3_field(char *packet, struct ip_addr *addr, int protocol){
     inet_aton(addr->src_addr, &l3_header->ip_src);
 	inet_aton(addr->dst_addr, &l3_header->ip_dst);
     
-    l3_header->ip_sum = csum((unsigned short *)l3_header, header_size);
-    return 1;   
+    l3_header->ip_sum = cal_checksum((unsigned short *)l3_header, header_size);
+    return sizeof(struct ip);  
 }
