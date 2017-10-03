@@ -8,6 +8,10 @@
 #include <net/if.h>
 #include <netinet/ether.h>
 #include <netinet/ip.h>
+#include <netinet/udp.h>
+
+#define L2_LENGTH 14
+#define L3_LENGTH 20
 
 struct mac_addr{
     unsigned char src_addr[6];
@@ -17,12 +21,21 @@ struct ip_addr{
     char *src_addr;
     char *dst_addr;
 };
-unsigned short cal_checksum(unsigned short *buf, int header_size)
+
+struct packet_seed{
+    int generator;
+    char *packet;
+    int len;
+    struct sockaddr_ll *binding;
+};
+
+unsigned short cal_checksum(unsigned short *buf, int header_size){
         unsigned long sum;
         // This unit includes 2 bytes.  
         header_size /= 2;
-        for(sum=0; header_size>0; header_size--)
-                sum += *buf++;
+        for(sum=0; header_size>0; header_size--){
+            sum += *buf++;
+        }
         sum = (sum >> 16) + (sum & 0x0000ffff);
         return (unsigned short)(~sum);
 }
@@ -82,4 +95,19 @@ int push_l3_field(char *packet, struct ip_addr *addr, int protocol){
     
     l3_header->ip_sum = cal_checksum((unsigned short *)l3_header, header_size);
     return sizeof(struct ip);  
+}
+
+int push_udp_field(char *packet, unsigned short int src_port, unsigned short int dst_port){
+    struct udphdr *udp_header = (struct udphdr*)(packet+L2_LENGTH+L3_LENGTH);
+    udp_header->uh_sport = htons(src_port);
+    udp_header->uh_dport = htons(dst_port);
+    return sizeof(struct udphdr);
+}
+
+int send_l2_packet(struct packet_seed *seed){
+    if (sendto(seed->generator, seed->packet, seed->len, 0, (struct sockaddr*)seed->binding, sizeof(struct sockaddr_ll)) < 0){
+        return 0;
+    } else {
+        return 1;
+    }
 }

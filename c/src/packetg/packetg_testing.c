@@ -39,8 +39,11 @@ int main(){
     // packet[header_size++] = 'e';
     // packet[header_size++] = 's';
     // packet[header_size++] = 't';
-    
-    if (sendto(generator, packet, header_size, 0, (struct sockaddr*)&this_sockaddr, sizeof(struct sockaddr_ll)) < 0)
-        printf("send: error\n");
+    struct packet_seed seed;
+    seed.generator = generator;
+    seed.packet = packet;
+    seed.len = header_size;
+    seed.binding = this_sockaddr;
+    send_l2_packet(&seed);
     return 0;
 }

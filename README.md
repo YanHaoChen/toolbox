@@ -45,7 +45,7 @@ Prepare some variables for sending L3 packet.
 	int generator;
 	struct mac_addr *l2_addr;
 	struct ip_addr *l3_addr;
-	// Initialize the packet we will send.
+	// Initialize the packet which will be sent.
 	char packet[1024];
 	memset(packet, 0, 1024);
    
@@ -79,7 +79,7 @@ Initialize the socket of generator.
 ```
 
 ##### step 4
-Select the interface you want to use, and get this binding struct(`sockaddr_ll`) which will be used when you send a packet on this interface.
+Select the interface you want to use, and get this binding struct(`sockaddr_ll`) which will be used when you send a packet to internet on this interface.
 
 ```c
 	struct sockaddr_ll this_sockaddr;
