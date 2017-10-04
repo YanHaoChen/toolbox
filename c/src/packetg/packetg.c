@@ -26,8 +26,9 @@ struct packet_seed{
     int generator;
     char *packet;
     int len;
-    struct sockaddr_ll *binding;
+    struct sockaddr_ll binding;
 };
+
 
 unsigned short cal_checksum(unsigned short *buf, int header_size){
         unsigned long sum;
@@ -36,8 +37,29 @@ unsigned short cal_checksum(unsigned short *buf, int header_size){
         for(sum=0; header_size>0; header_size--){
             sum += *buf++;
         }
-        sum = (sum >> 16) + (sum & 0x0000ffff);
+        while((sum >> 16) > 0){
+            sum = (sum >> 16) + (sum & 0x0000ffff);
+        }
         return (unsigned short)(~sum);
+}
+
+unsigned short cal_udp_checksum(unsigned short *presudo_header , unsigned short *buf, int header_size){
+    unsigned long sum = 0;
+    
+    int i = 0;
+    for(i = 6; i > 0; i--){
+        sum += *presudo_header++;
+    }
+    // This unit includes 2 bytes.
+    header_size /= 2;
+    for(; header_size>0; header_size--){
+        sum += *buf++;
+    }
+    while((sum >> 16) > 0){
+        sum = (sum >> 16) + (sum & 0x0000ffff);
+    }
+    
+    return (unsigned short)(~sum);
 }
 
 int init_packet_generator(void){
@@ -89,11 +111,9 @@ int push_l3_field(char *packet, struct ip_addr *addr, int protocol){
     l3_header->ip_id = htons(rand());
     l3_header->ip_ttl = 255;
     l3_header->ip_p = protocol;
-    l3_header->ip_len = header_size;
+    l3_header->ip_len = 0;
     inet_aton(addr->src_addr, &l3_header->ip_src);
 	inet_aton(addr->dst_addr, &l3_header->ip_dst);
-    
-    l3_header->ip_sum = cal_checksum((unsigned short *)l3_header, header_size);
     return sizeof(struct ip);  
 }
 
@@ -101,13 +121,52 @@ int push_udp_field(char *packet, unsigned short int src_port, unsigned short int
     struct udphdr *udp_header = (struct udphdr*)(packet+L2_LENGTH+L3_LENGTH);
     udp_header->uh_sport = htons(src_port);
     udp_header->uh_dport = htons(dst_port);
+    udp_header->uh_ulen = 0;
+    udp_header->uh_sum = 0;
     return sizeof(struct udphdr);
 }
 
-int send_l2_packet(struct packet_seed *seed){
-    if (sendto(seed->generator, seed->packet, seed->len, 0, (struct sockaddr*)seed->binding, sizeof(struct sockaddr_ll)) < 0){
+
+int send_packet(struct packet_seed *seed){
+    if (sendto(seed->generator, seed->packet, seed->len, 0, (struct sockaddr*)&seed->binding, sizeof(struct sockaddr_ll)) < 0){
         return 0;
     } else {
         return 1;
     }
+}
+
+int package_l3_packet(struct packet_seed *seed){
+    struct ip *l3_header = (struct ip *)(seed->packet + L2_LENGTH);
+    l3_header->ip_len = seed->len - L2_LENGTH;
+    l3_header->ip_sum = cal_checksum((unsigned short *)l3_header, L3_LENGTH);
+}
+
+int package_udp_packet_without_checksum(struct packet_seed *seed){
+    struct ip *l3_header = (struct ip *)(seed->packet + L2_LENGTH);
+    l3_header->ip_len = seed->len - L2_LENGTH;
+    l3_header->ip_sum = cal_checksum((unsigned short *)l3_header, L3_LENGTH);
+    
+    struct udphdr *udp_header = (struct udphdr *)(seed->packet + L2_LENGTH + L3_LENGTH);
+    int udp_len = seed->len - L2_LENGTH - L3_LENGTH;
+    udp_header->uh_ulen = (unsigned short)udp_len;
+}
+
+int package_udp_packet_with_checksum(struct packet_seed *seed){
+    struct ip *l3_header = (struct ip *)(seed->packet + L2_LENGTH);
+    l3_header->ip_len = seed->len - L2_LENGTH;
+    l3_header->ip_sum = cal_checksum((unsigned short *)l3_header, L3_LENGTH);
+    
+    struct udphdr *udp_header = (struct udphdr *)(seed->packet + L2_LENGTH + L3_LENGTH);
+    int udp_len = seed->len - L2_LENGTH - L3_LENGTH;
+    udp_header->uh_ulen = (unsigned short)udp_len;
+    unsigned long presudo_header[3];
+    memset(presudo_header, 0, 12);
+    unsigned long tmp = 0;
+    //presudo header
+    presudo_header[0]= (unsigned long)(l3_header->ip_src.s_addr);
+    presudo_header[1]= (unsigned long)(l3_header->ip_dst.s_addr);
+    tmp |= udp_len;
+    tmp |= 0x00110000;
+    presudo_header[2] = tmp;
+    udp_header->uh_sum=cal_udp_checksum((unsigned short *)presudo_header, (unsigned short *)udp_header, udp_len);
 }

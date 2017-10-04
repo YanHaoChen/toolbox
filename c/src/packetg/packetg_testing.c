@@ -30,7 +30,7 @@ int main(){
     
     generator = init_packet_generator();
     struct sockaddr_ll this_sockaddr;
-    this_sockaddr = set_interface_and_get_binding_addr(generator, "eth0", l2_addr);
+    this_sockaddr = set_interface_and_get_binding_addr(generator, "enp0s3", l2_addr);
 
     int header_size = 0;
     header_size += push_l2_field(packet, l2_addr);
@@ -44,6 +44,8 @@ int main(){
     seed.packet = packet;
     seed.len = header_size;
     seed.binding = this_sockaddr;
-    send_l2_packet(&seed);
+
+    package_l3_packet(&seed);
+    send_packet(&seed);
     return 0;
 }
