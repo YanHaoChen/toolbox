@@ -16,10 +16,17 @@ struct ip_addr{
 };
 
 struct packet_seed{
-    int generator;
     char *packet;
+    int generator;
     int len;
     struct sockaddr_ll binding;
+};
+
+struct presudo_header {
+    unsigned short protocol;
+    unsigned short len;
+    unsigned long src_ip;
+    unsigned long dst_ip;
 };
 
 unsigned short cal_checksum(unsigned short *buf, int header_size);

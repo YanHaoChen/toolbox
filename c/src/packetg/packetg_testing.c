@@ -35,17 +35,19 @@ int main(){
     int header_size = 0;
     header_size += push_l2_field(packet, l2_addr);
     header_size += push_l3_field(packet, l3_addr, 17);
-    // packet[header_size++] = 't';
-    // packet[header_size++] = 'e';
-    // packet[header_size++] = 's';
-    // packet[header_size++] = 't';
+    header_size += push_udp_field(packet, 1234, 5678);
+    packet[header_size++] = 't';
+    packet[header_size++] = 'e';
+    packet[header_size++] = 's';
+    packet[header_size++] = 't';
     struct packet_seed seed;
     seed.generator = generator;
     seed.packet = packet;
     seed.len = header_size;
     seed.binding = this_sockaddr;
 
-    package_l3_packet(&seed);
+    package_udp_packet_with_checksum(&seed);
     send_packet(&seed);
+    perror("test");
     return 0;
 }
