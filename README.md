@@ -16,11 +16,6 @@ I made some tools useful to reduce the time of programing.
 	* char \*get\_key\_char\_value(struct key\_char\_head \*this\_head, char \*key)
 	* int delete\_key\_char(struct key\_char\_head \*this\_head, char \*key)
 * [`packetg.h`、`packetg.c`](https://github.com/YanHaoChen/packetg)
-	* unsigned short cal\_checksum(unsigned short \*buf, int header\_size)
-	* int init\_packet\_generator(void);    
-	* struct sockaddr\_ll set\_interface\_and\_get\_binding\_addr(int sockfd, char \*interface\_name , struct mac\_addr \*addr);
-	* int push\_l2\_field(char \*packet, struct mac_addr \*addr);
-	* int push\_l3\_field(char \*packet, struct ip_addr \*addr, int protocol);
  
 * Tools：`pcinfo`、`sysinfo`
 
