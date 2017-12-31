@@ -6,7 +6,7 @@ int main(int argc, char **argv){
 	/* file */
 	FILE *fr, *fw;
 	fr = fopen(argv[1],"r");
-	int tmp_name_len = strlen(argv[1])+4;
+	int tmp_name_len = strlen(argv[1])+5;
 	char tmp_name[tmp_name_len];
 	sprintf(tmp_name,"%s.tmp",argv[1]);
 	fw = fopen(tmp_name,"w");
