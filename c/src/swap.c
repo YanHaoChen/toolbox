@@ -63,7 +63,7 @@ int main(int argc, char **argv){
 		}
 		fputc('\n',fw);
 	}
-
+	if(line) free(line);
 	fclose(fr);
 	fclose(fw);
 	return 0;
